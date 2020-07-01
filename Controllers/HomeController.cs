@@ -6,32 +6,106 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using JEYBlog.Models;
+using JEYBlog.ViewModels;
+using JEYBlog.Data.Repository;
+using JEYBlog.Data.FileManager;
+using JEYBlog.Models.Comments;
 
 namespace JEYBlog.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private IPostRepository _repo;
+        private IFileManager _fileMager;
+        private ICommentRepository _commentRepository;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IPostRepository repo, IFileManager fileManager, ICommentRepository commentRepository)
         {
-            _logger = logger;
+            _repo = repo;
+            _fileMager = fileManager;
+            _commentRepository = commentRepository;
+            var _comment = new MainComment();
+
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int pageNumber, string category) //=>
         {
-            return View();
+            if (pageNumber < 1)
+                RedirectToAction("index", new { pageNumber = 1, category });
+
+            /* var vm = new IndexViewModel
+             {
+                 PageNumber=pageNumber,
+                 Posts = string.IsNullOrEmpty(category) ? _repo.GetAllPosts(pageNumber) : _repo.GetAll(category)
+
+             };*/
+            var vm = _repo.GetAllPosts(pageNumber, category);
+            return View(vm);
         }
 
-        public IActionResult Privacy()
+
+
+        public async Task<IActionResult> Post(int id) => View(await _repo.GetById(id));
+
+
+
+        // GET: /<controller>/
+        [HttpGet("/Image/{image}")]
+        public IActionResult Image(string image)
         {
-            return View();
+            var mime = image.Substring(image.LastIndexOf("."), +1);
+
+            return new FileStreamResult(_fileMager.imageStream(image), $"image/{mime}");
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+
+        [HttpPost]
+        public async Task<IActionResult> Comment(CommentViewModel vm)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            if (!ModelState.IsValid)
+
+                return RedirectToAction("Post", new { id = vm.PostId });
+            
+
+            var post = await _repo.GetById(vm.PostId);
+
+            if (vm.MainCommentId == 0)
+            {
+
+                post.MainComments = post.MainComments ?? new List<MainComment>();
+
+                post.MainComments.Add(new MainComment
+                {
+                    Message = vm.Message,
+                    Created = DateTime.Now,
+
+
+                });
+
+
+                await _repo.UpdateAsync(post);
+            }
+            else
+            {
+
+                var comment = new SubComment
+                {
+                    MainCommentId = vm.MainCommentId,
+                    Message = vm.Message,
+                    Created = DateTime.Now
+
+                };
+
+                await _commentRepository.AddAsync(comment);
+            }
+
+            await _repo.SaveAllChangesAsync();
+
+
+
+            return RedirectToAction("Post", new { id = vm.PostId });
         }
+
+
     }
 }

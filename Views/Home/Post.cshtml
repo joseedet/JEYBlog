@@ -48,7 +48,6 @@
             </p>
             <div style="margin-left:20px;">
                 <h4> SubComments </h4>
-
                 @{
 
                     await Html.RenderPartialAsync("_MainComment", new JEYBlog.ViewModels.CommentViewModel { PostId = Model.Id, MainCommentId = c.Id });
