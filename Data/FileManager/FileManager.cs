@@ -1,13 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-
 using PhotoSauce.MagicScaler;
-
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace JEYBlog.Data.FileManager
 {
@@ -45,7 +40,7 @@ namespace JEYBlog.Data.FileManager
         }
 
 
-        public async Task<string> SaveImage(IFormFile image)
+        public string SaveImage(IFormFile image)
         {
             var save_path = Path.Combine(_imagePath);
             try
@@ -53,7 +48,7 @@ namespace JEYBlog.Data.FileManager
 
                 if (!Directory.Exists(save_path))
                 {
-                    Directory.CreateDirectory(save_path);
+                   Directory.CreateDirectory(save_path);
                 }
 
                 var mime = image.FileName.Substring(image.FileName.LastIndexOf("."));
@@ -63,7 +58,7 @@ namespace JEYBlog.Data.FileManager
                 using (var filestream = new FileStream(Path.Combine(save_path, fileName), FileMode.Create))
                 {
                     /*await image.CopyToAsync(filestream);*/
-                    MagicImageProcessor.ProcessImage(image.OpenReadStream(), filestream, imageoptions());
+                     MagicImageProcessor.ProcessImage(image.OpenReadStream(), filestream, imageoptions());
                 }
 
 

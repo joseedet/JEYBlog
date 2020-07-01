@@ -11,7 +11,7 @@ namespace JEYBlog.Data.FileManager
         public interface IFileManager
         {
             FileStream imageStream(string image);
-            Task<string> SaveImage(IFormFile file);
+            string SaveImage(IFormFile file);
             bool RemoveImage(string image);
 
 
