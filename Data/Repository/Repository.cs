@@ -51,7 +51,7 @@ namespace JEYBlog.Data.Repository
 
         public void  Update(TEntity entity)
         {
-            _context.Set<TEntity>().Update(entity);
+           _context.Set<TEntity>().Update(entity);
             //await SaveAllChangesAsync();
         }
 
@@ -83,5 +83,7 @@ namespace JEYBlog.Data.Repository
         {
             throw new NotImplementedException();
         }
+
+        
     }
 }

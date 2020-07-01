@@ -10,8 +10,8 @@ namespace JEYBlog.ViewModels
 {
     public class CommentViewModel
     {
-        public class SubComment : Comment
-        {
+        
+        
             [Required]
             public int PostId { get; set; }
 
@@ -20,6 +20,6 @@ namespace JEYBlog.ViewModels
 
             [Required]
             public string Message { get; set; }
-        }
+        
     }
 }

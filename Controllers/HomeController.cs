@@ -10,6 +10,7 @@ using JEYBlog.ViewModels;
 using JEYBlog.Data.Repository;
 using JEYBlog.Data.FileManager;
 using JEYBlog.Models.Comments;
+using Microsoft.VisualBasic;
 
 namespace JEYBlog.Controllers
 {
@@ -83,7 +84,7 @@ namespace JEYBlog.Controllers
                 });
 
 
-                await _repo.UpdateAsync(post);
+               _repo.Update(post);
             }
             else
             {
